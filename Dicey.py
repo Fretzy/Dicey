@@ -2,23 +2,23 @@ import time
 import thumby
 import random
 
-ver = "Ver. 0.1.0"
+ver = "Ver. 0.1.1"
 
-# BITMAP: width: 8, height: 8
-manMap = bytearray([0,2,90,14,0,66,36,24])
-manSprite = thumby.Sprite(8, 8, manMap, key=0)
+# BITMAP: width: 8, height: 7
+manMap = bytearray([2,42,6,0,65,34,20,8])
+manSprite = thumby.Sprite(8, 7, manMap, key=0)
 manSprite.x = 64
 manSprite.y = 1
 
-# BITMAP: width: 8, height: 8
-infoMap = bytearray([24,36,66,0,0,122,0,0])
-infoSprite = thumby.Sprite(8, 8, infoMap, key=0)
+# BITMAP: width: 8, height: 7
+infoMap = bytearray([8,20,34,65,0,0,58,0])
+infoSprite = thumby.Sprite(8, 7, infoMap, key=0)
 infoSprite.x = 0
 infoSprite.y = 1
 
-# BITMAP: width: 3, height: 8
-arrowMap = bytearray([66,36,24])
-arrowSprite = thumby.Sprite(3, 8, arrowMap, key=0)
+# BITMAP: width: 4, height: 7
+arrowMap = bytearray([65,34,20,8])
+arrowSprite = thumby.Sprite(4, 7, arrowMap, key=0)
 
 state = 0
 
@@ -58,7 +58,7 @@ while(True):
     while(state == 1):
         thumby.display.fill(0)
         
-        thumby.display.blit(arrowMap, 69, 1, 3, 8, 0, 0, 0)
+        thumby.display.blit(arrowMap, 68, 1, 4, 7, 0, 0, 0)
         thumby.display.setFont("/lib/font8x8.bin", 8, 8, 1)
         thumby.display.drawText("DICEY", 13, 1, 1)
         thumby.display.drawLine(0, 10, 72, 10, 1)
@@ -77,7 +77,7 @@ while(True):
     while(state == 2):
         thumby.display.fill(0)
         
-        thumby.display.blit(arrowMap, 0, 1, 3, 8, 0, 1, 0)
+        thumby.display.blit(arrowMap, 0, 1, 4, 7, 0, 1, 0)
         thumby.display.setFont("/lib/font8x8.bin", 8, 8, 1)
         thumby.display.drawText("DICEY", 13, 1, 1)
         thumby.display.drawLine(0, 10, 72, 10, 1)
