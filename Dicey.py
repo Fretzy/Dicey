@@ -31,6 +31,7 @@ dice = 1
 incNum = 1
 sides = 6
 resultInt = 0
+history = []
 histBegin = 0
 # End Variables Init
 
