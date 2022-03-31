@@ -22,7 +22,7 @@ arrowSprite = thumby.Sprite(4, 7, arrowMap, key=0)
 
 
 # Begin Variables Init
-ver = "Ver. 0.1.3"
+ver = "Ver. 0.1.2"
 state = 0
 modState = 1
 maxHistory = 10
