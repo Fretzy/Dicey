@@ -2,7 +2,7 @@ import time
 import thumby
 import random
 
-ver = "Ver. 0.1.1"
+ver = "Ver. 0.1.2"
 
 # BITMAP: width: 8, height: 7
 manMap = bytearray([2,42,6,0,65,34,20,8])
@@ -21,11 +21,27 @@ arrowMap = bytearray([65,34,20,8])
 arrowSprite = thumby.Sprite(4, 7, arrowMap, key=0)
 
 state = 0
+modState = 1
+maxHistory = 4
 
 dice = 1
 incNum = 1
 sides = 6
-result = 0
+resultInt = 0
+history = []
+
+def printResults():
+    thumby.display.setFont("/lib/font5x7.bin", 5, 7, 1)
+    if resultInt != 0 and modState != 4:
+        thumby.display.drawText(str(history[0]), 0, 33, 1)
+        if len(history) >= 2:
+            thumby.display.drawText(str(history[1]), 0, 24, 1)
+        if len(history) >= 3:
+            thumby.display.drawText(str(history[2]), 0, 15, 1)
+            
+def cleanHistory():
+    if len(history) == maxHistory:
+        history.pop(3)
 
 while(True):
 
@@ -50,7 +66,7 @@ while(True):
             state = 2
     
         if thumby.buttonA.justPressed() or thumby.buttonB.justPressed():
-            state = 3
+            state = 4
     
         thumby.display.update()
      
@@ -73,32 +89,76 @@ while(True):
         
         thumby.display.update()
     
-    # Manual Screen
+    # Manual Screen 1
     while(state == 2):
+
         thumby.display.fill(0)
-        
         thumby.display.blit(arrowMap, 0, 1, 4, 7, 0, 1, 0)
         thumby.display.setFont("/lib/font8x8.bin", 8, 8, 1)
-        thumby.display.drawText("DICEY", 13, 1, 1)
+        thumby.display.drawText("MANUAL", 10, 1, 1)
         thumby.display.drawLine(0, 10, 72, 10, 1)
+        thumby.display.drawSprite(manSprite)
+        thumby.display.setFont("/lib/font5x7.bin", 5, 7, 1)
+        thumby.display.drawText("A: Roll Dice", 0, 13, 1)
+        thumby.display.drawText("B: Switch #", 0, 23, 1)
+        thumby.display.drawText("Mode", 30, 31, 1)
         
-    
+        if thumby.buttonR.justPressed():
+            state = 3
+            
         if thumby.buttonL.justPressed():
             state = 0
-    
+                
         thumby.display.update()
-    
-    # Dice Roller Screen
+ 
+    # Manual Screen 2
     while(state == 3):
-        # Fill canvas to black
+
+        thumby.display.fill(0)
+        thumby.display.blit(arrowMap, 0, 1, 4, 7, 0, 1, 0)
+        thumby.display.setFont("/lib/font8x8.bin", 8, 8, 1)
+        thumby.display.drawText("MANUAL", 10, 1, 1)
+        thumby.display.drawLine(0, 10, 72, 10, 1)
+        thumby.display.setFont("/lib/font5x7.bin", 5, 7, 1)
+        thumby.display.drawText("U/D: # Dice", 0, 15, 1)
+        thumby.display.drawText("L/R: # Sides", 0, 26, 1)
+        
+        if thumby.buttonL.justPressed():
+            state = 2
+                
+        thumby.display.update() 
+            
+    # Dice Roller Screen
+    while(state == 4):
+        
+        # Blank screen, then draw divider
         thumby.display.fill(0)
         thumby.display.drawLine(0, 8, 72, 8, 1)
         
-        if thumby.buttonB.pressed():
+        # Change State Modifier
+        if thumby.buttonB.justPressed():
+            modState += 1
+        if modState > 3:
+            modState = 1
+            
+        # Display # State Modifier
+        if modState == 1:
+            thumby.display.drawText("*1", 60, 0, 1)
+        if modState == 2:
+            thumby.display.drawText("*5", 60, 0, 1)
+        if modState == 3:
+            thumby.display.drawText("*10", 54, 0, 1)            
+            
+            
+        # Define Incrementation Value based on State Modifier
+        if modState == 2:
             incNum = 5
+        elif modState == 3:
+            incNum = 10
         else:
             incNum = 1
             
+        # Let User Change numDie & Sides
         if thumby.buttonU.justPressed():
             dice += incNum
         if thumby.buttonD.justPressed():
@@ -107,33 +167,33 @@ while(True):
             sides += incNum
         if thumby.buttonL.justPressed():
             sides -= incNum
-            
+        
+        # Enforce Minimum and Maximum numDie & Sides 
         if dice < 1:
             dice = 1
-            
         if dice > 99:
             dice = 99
-            
         if sides < 2:
             sides = 2
-            
         if sides > 100:
             sides = 100
             
-        if thumby.buttonA.justPressed():
-            result = 0
-            for x in range(dice):
-                random.seed(time.ticks_us())
-                result += random.randint(1, sides)
-    
+        # Print numDie & Sides
         thumby.display.setFont("/lib/font5x7.bin", 5, 7, 1)
         thumby.display.drawText(str(dice), 0, 0, 1)
         thumby.display.drawText("d", len(str(dice)) * 6, 0, 1)
         thumby.display.drawText(str(sides), len(str(dice)) * 6 + 6, 0, 1)
-        thumby.display.drawText(str(incNum), 66, 0, 1)
-        if result != 0:
-            #thumby.display.setFont("/lib/font8x8.bin", 8, 8, 1)
-            thumby.display.drawText("Result: ", 0, 33, 1)
-            thumby.display.drawText(str(result), 41, 33, 1)
-        #thumby.display.drawText(str(timer), 0, 20, 1)
+           
+            
+        # Roll the dice on A button press
+        if thumby.buttonA.justPressed():
+            resultInt = 0
+            for x in range(dice):
+                random.seed(time.ticks_us())
+                resultInt += random.randint(1, sides)
+            result = "{}d{}:{}".format(dice, sides, resultInt)
+            history.insert(0, result)
+            
+        cleanHistory()
+        printResults()    
         thumby.display.update()
