@@ -2,37 +2,43 @@ import time
 import thumby
 import random
 
-ver = "Ver. 0.1.2"
-
-# BITMAP: width: 8, height: 7
+# Begin Sprites/Bitmaps
+# Manual Button: width: 8, height: 7
 manMap = bytearray([2,42,6,0,65,34,20,8])
 manSprite = thumby.Sprite(8, 7, manMap, key=0)
 manSprite.x = 64
 manSprite.y = 1
 
-# BITMAP: width: 8, height: 7
+# Info Button: width: 8, height: 7
 infoMap = bytearray([8,20,34,65,0,0,58,0])
 infoSprite = thumby.Sprite(8, 7, infoMap, key=0)
 infoSprite.x = 0
 infoSprite.y = 1
 
-# BITMAP: width: 4, height: 7
+# Arrow: width: 4, height: 7
 arrowMap = bytearray([65,34,20,8])
 arrowSprite = thumby.Sprite(4, 7, arrowMap, key=0)
+# End Sprites/Bitmaps
 
+
+# Begin Variables Init
+ver = "Ver. 0.1.3"
 state = 0
 modState = 1
-maxHistory = 4
+maxHistory = 10
 
 dice = 1
 incNum = 1
 sides = 6
 resultInt = 0
-history = []
+histBegin = 0
+# End Variables Init
 
+
+# Begin Functions
 def printResults():
     thumby.display.setFont("/lib/font5x7.bin", 5, 7, 1)
-    if resultInt != 0 and modState != 4:
+    if resultInt != 0:
         thumby.display.drawText(str(history[0]), 0, 33, 1)
         if len(history) >= 2:
             thumby.display.drawText(str(history[1]), 0, 24, 1)
@@ -41,10 +47,33 @@ def printResults():
             
 def cleanHistory():
     if len(history) == maxHistory:
-        history.pop(3)
+        history.pop(9)
+        
+def printHistory():
+    thumby.display.setFont("/lib/font5x7.bin", 5, 7, 1)
+    if resultInt != 0 and histBegin <= len(history):
+        thumby.display.drawText(str(history[histBegin]), 0, 33, 1)
+        if len(history) > histBegin + 1:
+            thumby.display.drawText(str(history[histBegin + 1]), 0, 24, 1)
+        if len(history) > histBegin + 2:
+            thumby.display.drawText(str(history[histBegin +2]), 0, 15, 1)
 
+    
+# End Functions
+
+
+# Splash Screen
+
+###
+
+# End Splash Screen
+
+
+###########
+# Main Loop
 while(True):
 
+    ##############
     # Title Screen
     while(state == 0):
         thumby.display.fill(0)
@@ -60,18 +89,19 @@ while(True):
         thumby.display.drawText("press a/b", 10, 32, 1)
         
         if thumby.buttonL.justPressed():
-            state = 1
+            state = 10
             
         if thumby.buttonR.justPressed():
-            state = 2
+            state = 20
     
         if thumby.buttonA.justPressed() or thumby.buttonB.justPressed():
-            state = 4
+            state = 40
     
         thumby.display.update()
      
+    #############
     # Info Screen    
-    while(state == 1):
+    while(state == 10):
         thumby.display.fill(0)
         
         thumby.display.blit(arrowMap, 68, 1, 4, 7, 0, 0, 0)
@@ -89,8 +119,9 @@ while(True):
         
         thumby.display.update()
     
+    #################
     # Manual Screen 1
-    while(state == 2):
+    while(state == 20):
 
         thumby.display.fill(0)
         thumby.display.blit(arrowMap, 0, 1, 4, 7, 0, 1, 0)
@@ -104,15 +135,16 @@ while(True):
         thumby.display.drawText("Mode", 30, 31, 1)
         
         if thumby.buttonR.justPressed():
-            state = 3
+            state = 21
             
         if thumby.buttonL.justPressed():
             state = 0
                 
         thumby.display.update()
  
+    #################
     # Manual Screen 2
-    while(state == 3):
+    while(state == 21):
 
         thumby.display.fill(0)
         thumby.display.blit(arrowMap, 0, 1, 4, 7, 0, 1, 0)
@@ -124,12 +156,13 @@ while(True):
         thumby.display.drawText("L/R: # Sides", 0, 26, 1)
         
         if thumby.buttonL.justPressed():
-            state = 2
+            state = 20
                 
         thumby.display.update() 
-            
+    
+    ####################        
     # Dice Roller Screen
-    while(state == 4):
+    while(state == 40):
         
         # Blank screen, then draw divider
         thumby.display.fill(0)
@@ -138,7 +171,7 @@ while(True):
         # Change State Modifier
         if thumby.buttonB.justPressed():
             modState += 1
-        if modState > 3:
+        if modState > 4:
             modState = 1
             
         # Display # State Modifier
@@ -147,7 +180,9 @@ while(True):
         if modState == 2:
             thumby.display.drawText("*5", 60, 0, 1)
         if modState == 3:
-            thumby.display.drawText("*10", 54, 0, 1)            
+            thumby.display.drawText("*10", 54, 0, 1) 
+        if modState == 4:
+            thumby.display.drawText("History (A)", 0, 0, 1)
             
             
         # Define Incrementation Value based on State Modifier
@@ -179,21 +214,52 @@ while(True):
             sides = 100
             
         # Print numDie & Sides
-        thumby.display.setFont("/lib/font5x7.bin", 5, 7, 1)
-        thumby.display.drawText(str(dice), 0, 0, 1)
-        thumby.display.drawText("d", len(str(dice)) * 6, 0, 1)
-        thumby.display.drawText(str(sides), len(str(dice)) * 6 + 6, 0, 1)
+        if modState != 4:
+            thumby.display.setFont("/lib/font5x7.bin", 5, 7, 1)
+            thumby.display.drawText(str(dice), 0, 0, 1)
+            thumby.display.drawText("d", len(str(dice)) * 6, 0, 1)
+            thumby.display.drawText(str(sides), len(str(dice)) * 6 + 6, 0, 1)
            
             
-        # Roll the dice on A button press
+        # Roll the dice on buttonA press unless modState is 4, in which case open history screen
         if thumby.buttonA.justPressed():
-            resultInt = 0
-            for x in range(dice):
-                random.seed(time.ticks_us())
-                resultInt += random.randint(1, sides)
-            result = "{}d{}:{}".format(dice, sides, resultInt)
-            history.insert(0, result)
+            if modState != 4:
+                resultInt = 0
+                for x in range(dice):
+                    random.seed(time.ticks_us())
+                    resultInt += random.randint(1, sides)
+                result = "{}d{}:{}".format(dice, sides, resultInt)
+                history.insert(0, result)
+            else:
+                state = 50
             
         cleanHistory()
         printResults()    
         thumby.display.update()
+        
+    ################
+    # History Screen
+    while(state == 50):
+        
+        # Blank screen, then draw divider
+        thumby.display.fill(0)
+        thumby.display.drawLine(0, 8, 72, 8, 1)
+        thumby.display.drawText("History", 0, 0, 1)
+        
+        thumby.display.drawText("{}-{}".format(histBegin + 1, histBegin + 3), 55, 0, 1)
+        
+        if thumby.buttonU.justPressed():
+            if histBegin < maxHistory - 4:
+                histBegin += 1
+
+        if thumby.buttonD.justPressed():
+            if histBegin > 0:
+                histBegin -= 1
+        
+        if thumby.buttonB.justPressed():
+            modState = 1
+            state = 40
+        
+        printHistory()
+        thumby.display.update()
+        
