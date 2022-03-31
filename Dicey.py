@@ -52,7 +52,7 @@ def cleanHistory():
         
 def printHistory():
     thumby.display.setFont("/lib/font5x7.bin", 5, 7, 1)
-    if resultInt != 0 and histBegin <= len(history):
+    if resultInt != 0 and histBegin < len(history):
         thumby.display.drawText(str(history[histBegin]), 0, 33, 1)
         if len(history) > histBegin + 1:
             thumby.display.drawText(str(history[histBegin + 1]), 0, 24, 1)
@@ -250,7 +250,7 @@ while(True):
         thumby.display.drawText("{}-{}".format(histBegin + 1, histBegin + 3), 55, 0, 1)
         
         if thumby.buttonU.justPressed():
-            if histBegin < maxHistory - 4:
+            if histBegin < len(history) - 3:
                 histBegin += 1
 
         if thumby.buttonD.justPressed():
