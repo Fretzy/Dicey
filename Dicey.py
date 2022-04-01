@@ -22,7 +22,7 @@ arrowSprite = thumby.Sprite(4, 7, arrowMap, key=0)
 
 
 # Begin Variables Init
-ver = "Ver. 0.1.2"
+ver = "Ver. 0.2.1"
 state = 0
 modState = 1
 maxHistory = 10
@@ -183,7 +183,9 @@ while(True):
         if modState == 3:
             thumby.display.drawText("*10", 54, 0, 1) 
         if modState == 4:
-            thumby.display.drawText("History (A)", 0, 0, 1)
+            state = 50
+#        if modState == 4:
+#            thumby.display.drawText("History (A)", 0, 0, 1)
             
             
         # Define Incrementation Value based on State Modifier
@@ -220,7 +222,6 @@ while(True):
             thumby.display.drawText(str(dice), 0, 0, 1)
             thumby.display.drawText("d", len(str(dice)) * 6, 0, 1)
             thumby.display.drawText(str(sides), len(str(dice)) * 6 + 6, 0, 1)
-           
             
         # Roll the dice on buttonA press unless modState is 4, in which case open history screen
         if thumby.buttonA.justPressed():
@@ -231,8 +232,8 @@ while(True):
                     resultInt += random.randint(1, sides)
                 result = "{}d{}:{}".format(dice, sides, resultInt)
                 history.insert(0, result)
-            else:
-                state = 50
+#            else:
+#                state = 50
             
         cleanHistory()
         printResults()    
